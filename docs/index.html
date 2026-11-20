@@ -93,17 +93,153 @@ class: center, middle
 
 .NET 11 (STS) har like lang supportperiode som .NET 10 (LTS)
 
+
 ---
 
 # Kjøremiljø
 
+- Maskinvarekravene er oppdatert
+  - Droppet support for gammel maskinvare uten nødvendig sikkerhet eller instruksjonssett
+  - Kan nå kjøres på maskiner med mer enn 1024 prosessorer
+- Ytterlige forbedringer i ahead-of-time kompilering
+
 ---
 
-# Bibliotek: 
+# Kjøremiljø: Forbedringer i async / await
+
+- Async await i kjøremiljøet i stede for kompilator generert tilstands-maskin
+    ```xml
+    <PropertyGroup>
+      <Features>runtime-async=on</Features>
+    </PropertyGroup>
+    ```
+- Renere call-stack i alle situasjoner
+- Bedre ytelse og lavere minnebruk
+- .NET 11 bibliotekene bruker allerede disse forbedringene
 
 ---
 
-# SDK: 
+# Bibliotekt: Json 
+
+- Demo
+
+---
+
+# Bibliotek: Prosesser
+
+Enkel tilgang til de vanligste måten å kjøre og interagere med prosesser
+
+- Resultat med standard output, error og exit code
+- Fire-and-forget
+- Sende Posix signaler
+
+---
+
+# Bibliotek: Strenger
+
+- Metodevarianter i strengklasser tar nå inn unicode runer som argumenter
+- `StringBuilder.MoveChunks()` flytter innhold uten kopiering og allokering av minne
+- (Minimalt) raskere Base64-koding og dekoding med nye metode varianter
+
+---
+
+# Bibliotek: Tall
+
+- IEEE 754 desimaltall
+  - Standardiserte høyoppløselige desimaltall (32, 64 eller 128 bit)
+  - Ikke helt det samme som vår eksisterende `Decimal` type
+- Parsing av tall kan nå ignorere enheter (f.eks. "100px" eller "50kg")
+- Representasjon av komplekse tall utover den eksisterende som bruker `Double`
+- BFloat16 som brukes i maskinlæring og AI
+- Generisk variant av pseudo-tilfeldige tall
+
+
+---
+
+# Bibliotek: LINQ forbedringer
+
+FullJoin kompletterer de andre outer-join operasjonene i LINQ:
+
+```c#
+var products = new List<(int Id, string Name, string? Category)>
+{
+    (1, "Laptop", "Electronics"),
+    (2, "Mouse", "Electronics"),
+    (3, "Orphan", null), // No matching category
+};
+var categories = new List<(string Name, string Description)>
+{
+    ("Electronics", "Electronic devices"),
+    ("Furniture", "Office furniture"), // No matching product
+};
+
+// FullJoin: all products and categories, paired where they match
+var fullJoined = products.FullJoin(
+    categories,
+    p => p.Category,
+    c => c.Name);
+
+foreach (var (product, category) in fullJoined)
+    Console.WriteLine(
+        $"{product.Name ?? "(none)"}: {category.Description ?? "(none)"}");
+// Laptop: Electronic devices
+// Mouse: Electronic devices
+// Orphan: (none)
+// (none): Office furniture
+```
+
+---
+
+# Bibliotek: Asynkron validering
+
+```c#
+public sealed class BackendOptionsValidator : IAsyncValidateOptions<BackendOptions>
+{
+    public async Task<ValidateOptionsResult> ValidateAsync(
+        string? name, BackendOptions options, CancellationToken cancellationToken = default) =>
+        await IsReachableAsync(options.HostName, cancellationToken)
+            ? ValidateOptionsResult.Success
+            : ValidateOptionsResult.Fail($"'{options.HostName}' isn't reachable.");
+
+    // Source-generated validators also implement this synchronous fallback.
+    public ValidateOptionsResult Validate(string? name, BackendOptions options) =>
+        ValidateOptionsResult.Fail("Backend validation must run asynchronously.");
+}
+```
+
+---
+
+# Bibliotek: Regelbasert Open Telemetry aktivitet sporing
+
+```c#
+builder.Services.AddTracing(tracing =>
+{
+    tracing.EnableTracing(sourceName: "MyCompany.Orders");
+    tracing.DisableTracing(sourceName: "MyCompany.Orders", operationName: "HealthCheck");
+});
+```
+---
+
+# Bibliotek: Kryptografi
+
+- Eksperimentell støtte for "post-quantum" kryptografi
+
+```c#
+var suite = new HpkeSuite(HpkeKem.DHKEM_P256_HKDF_SHA256, HpkeKdf.HKDF_SHA256, HpkeAead.AES_128_GCM);
+using var recipient = Hpke.GenerateKey(suite);
+using var sender = Hpke.ImportEncapsulationKey(suite, recipient.ExportEncapsulationKey());
+sender.Seal("Hello"u8, out byte[] encapsulatedSecret, out byte[] ciphertext);
+byte[] plaintext = recipient.Open(encapsulatedSecret, ciphertext);
+Console.WriteLine(Encoding.UTF8.GetString(plaintext));
+```
+
+---
+
+# SDK: Forbedringer
+
+- Redusert størrelse på Linux og macOS
+- Redusert støy og bedre meldinger fra kodeanalyse
+- 
 
 ---
 
