@@ -179,6 +179,16 @@ var fullJoined = products.FullJoin(
     p => p.Category,
     c => c.Name);
 
+...    
+```
+---
+
+# Bibliotek: LINQ forbedringer
+
+FullJoin kompletterer de andre outer-join operasjonene i LINQ:
+
+```c#
+
 foreach (var (product, category) in fullJoined)
     Console.WriteLine(
         $"{product.Name ?? "(none)"}: {category.Description ?? "(none)"}");
@@ -235,25 +245,130 @@ Console.WriteLine(Encoding.UTF8.GetString(plaintext));
 
 ---
 
+# SDK: Solution filter
+
+```bash
+dotnet new slnf --parent-solution MySolution.slnx --name Tests
+dotnet sln Tests.slnf add tests/Tests/Tests.csproj
+dotnet sln Tests.slnf add src/Lib/Lib.csproj
+dotnet sln Tests.slnf list
+dotnet sln Tests.slnf remove src/Lib/Lib.csproj
+```
+
+---
+
 # SDK: Forbedringer
 
 - Redusert størrelse på Linux og macOS
 - Redusert støy og bedre meldinger fra kodeanalyse
-- 
+- Filbaserte apper
+  - Støtte for inkludering av flere filer
+  - Gjenbruk av kompilerte apper
 
 ---
 
-# Nevneverdig breaking change: 
+# SDK: `dotnet` CLI
+
+- Hybrid AOT
+- Varm bygg server prosess
+- `dotnet run` miljøvariabler
+- `dotnet test`
+  - Støtte for macOS, iOS og Android
+  - Innebygde maler for xUnit v3
+
 ---
 
-# Kjøremiljø: 
+# SDK: NuGet
+
+Konfigurer minimum alder på NuGet-pakker
+
+```bash
+dotnet nuget add source https://api.nuget.org/v3/index.json --name public --min-publish-age-hours 24 --configfile nuget.config
+dotnet nuget update source public --min-publish-age-hours 48 --configfile nuget.config
+```
+---
+
+# SDK: Kontainere
+
+- Innebygd kontainerstøtte i operativsystemet brukes som standard på Windows og macOS
+- Docker og PodMan fortsatt støttet som alternativer
+- Deterministisk image digest
+    ```bash
+    dotnet publish /t:PublishContainer \
+      -p:ContainerRegistry=registry.example.com \
+      -p:SOURCE_DATE_EPOCH="$(git log -1 --pretty=%ct)"
+    ```
+---
+
+# Nevneverdig breaking change
+
+Ingen.
+
+> Sjekk referansen om noe uventet oppstår etter oppgradering.
 
 ---
 
-# Oppsummering
+# ASP.NET Core : Union typer
 
-- 
+```csharp
+public union UnionIntString(int, string);
 
+app.MapGet("/value", () => new UnionIntString(42));
+```
+
+---
+
+# ASP.NET Core: Hopp over mellomvare
+
+```csharp
+[ApiController]
+[Route("robots.txt")]
+[ShortCircuit]
+public class RobotsController : ControllerBase
+{
+    [HttpGet]
+    public IActionResult Get() => Content("User-agent: *\nDisallow:", "text/plain");
+}
+```
+
+---
+
+# ASP.NET Core: OpenAPI 3.2.0
+
+- Inkonsistent dokumentasjon som både sier at OpenAPI 3.2.0 inneholder breaking change og er opt-in
+- Et annet avsnitt sier at OpenAPI 3.2 er standard og at opt-in er for tidligere versjoner
+- Ved tvil, velg den nyeste versjonen som standard.
+    ```csharp
+    builder.Services.AddOpenApi(options =>
+    {
+        options.OpenApiVersion = Microsoft.OpenApi.OpenApiSpecVersion.OpenApi3_2;
+    });
+    ```
+
+---
+
+# ASP.NET Core
+
+- Mellomvare for OpenTelemetry som standard
+
+---
+
+# Agentisk utvikling for .NET 11
+
+- Microsoft Learn MCP server
+  https://learn.microsoft.com/api/mcp
+- .NET 11 skills
+  https://github.com/dotnet/skills/tree/main/plugins/dotnet11
+
+---
+
+# Agentisk utvikling: Kommandolinjeverktøy
+
+- `dotnetup`
+- `dnx`
+- `azd`
+- `aspire`
+- `gh`
 
 ---
 
@@ -267,6 +382,7 @@ class: center, middle
 
 - [What's new in .NET 11](https://learn.microsoft.com/en-us/dotnet/core/whats-new/dotnet-11/overview)
 - [Breaking changes in .NET 11](https://learn.microsoft.com/en-us/dotnet/core/compatibility/11)
+- [What's new in ASP.NET Core in .NET 11](https://learn.microsoft.com/en-us/aspnet/core/release-notes/aspnetcore-11?view=aspnetcore-11.0&tabs=minimal-apis)
 
     </textarea>
     <script src="./remark-latest.min.js"></script>

@@ -1,3 +1,5 @@
+#!/usr/bin/env -S dotnet --
+
 #:sdk Microsoft.NET.Sdk.Web
 
 var app = WebApplication
