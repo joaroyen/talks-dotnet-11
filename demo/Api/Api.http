@@ -1,0 +1,56 @@
+###
+@Api_HostAddress = http://localhost:5130
+
+### Open API docuement
+
+GET {{Api_HostAddress}}/openapi/v1.json
+Accept: application/json
+
+### Numerical path parameter
+
+GET {{Api_HostAddress}}/union/path-parameter/42
+Accept: application/json
+
+### String path paramter
+
+GET {{Api_HostAddress}}/union/path-parameter/forty-two
+Accept: application/json
+
+### Guid path parameter
+
+GET {{Api_HostAddress}}/union/path-parameter/52c4fdd7-2b9c-4ca0-887d-89ea78677134
+Accept: application/json
+
+### Apple
+
+POST {{Api_HostAddress}}/union/body/42
+Accept: application/json
+Content-Type: application/json
+
+{
+    "appleDescription": "This is a lovely apple",
+    "cultivar": "GrannySmith"
+}
+
+### Pear
+
+POST {{Api_HostAddress}}/union/body/52c4fdd7-2b9c-4ca0-887d-89ea78677134
+Accept: application/json
+Content-Type: application/json
+
+{
+  "pearDescription": "This is a tasteful pear",
+  "cultivar": "IberianPear"
+}
+
+### Fruit
+
+POST {{Api_HostAddress}}/union/body/52c4fdd7-2b9c-4ca0-887d-89ea78677134
+Accept: application/json
+Content-Type: application/json
+
+{
+  "description": "This is a tasteful pear",
+  "cultivar": "IberianPear"
+}
+
