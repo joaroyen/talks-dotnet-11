@@ -1,4 +1,6 @@
-﻿namespace Api.Contract;
+﻿using System.Text.Json.Serialization;
+
+namespace Api.Contract;
 
 public enum AppleCultivar { GrannySmith, PinkLady, Løeple };
 public enum PearCultivar { IberianPear, EuropeanPear, PlymouthPear };

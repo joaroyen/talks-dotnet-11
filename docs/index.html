@@ -86,6 +86,7 @@ class: center, middle
 - SDK
 - Verktøy 
 - Breaking changes
+- ASP.NET Core
 
 ---
 
@@ -93,10 +94,15 @@ class: center, middle
 
 .NET 11 (STS) har like lang supportperiode som .NET 10 (LTS)
 
+---
+
+class: center, middle
+
+# Kjøremiljø
 
 ---
 
-# Kjøremiljø
+# Kjøremiljø: Generelle forbedringer
 
 - Maskinvarekravene er oppdatert
   - Droppet support for gammel maskinvare uten nødvendig sikkerhet eller instruksjonssett
@@ -119,13 +125,42 @@ class: center, middle
 
 ---
 
-# Bibliotekt: Json 
+class: center, middle
+
+# Biblioteker
+
+---
+
+# Biblioteker: Json linjer
+
+```csharp
+using var jsonlStream = new MemoryStream();
+PipeWriter jsonlPipe = PipeWriter.Create(jsonlStream);
+
+// Write JSON Lines (one value per line): 0\n1\n2\n3\n4\n
+await JsonSerializer.SerializeAsyncEnumerable(
+    jsonlPipe,
+    [0, 1, 2, 3, 4],
+    topLevelValues: true);
+await jsonlPipe.CompleteAsync();
+
+Resultat:
+0
+1
+2
+3
+4
+```
+
+---
+
+# Biblioteker: Json serialisering av union typer
 
 - Demo
 
 ---
 
-# Bibliotek: Prosesser
+# Biblioteker: Prosesser
 
 Enkel tilgang til de vanligste måten å kjøre og interagere med prosesser
 
@@ -135,7 +170,7 @@ Enkel tilgang til de vanligste måten å kjøre og interagere med prosesser
 
 ---
 
-# Bibliotek: Strenger
+# Biblioteker: Strenger
 
 - Metodevarianter i strengklasser tar nå inn unicode runer som argumenter
 - `StringBuilder.MoveChunks()` flytter innhold uten kopiering og allokering av minne
@@ -143,7 +178,7 @@ Enkel tilgang til de vanligste måten å kjøre og interagere med prosesser
 
 ---
 
-# Bibliotek: Tall
+# Biblioteker: Tall
 
 - IEEE 754 desimaltall
   - Standardiserte høyoppløselige desimaltall (32, 64 eller 128 bit)
@@ -153,10 +188,9 @@ Enkel tilgang til de vanligste måten å kjøre og interagere med prosesser
 - BFloat16 som brukes i maskinlæring og AI
 - Generisk variant av pseudo-tilfeldige tall
 
-
 ---
 
-# Bibliotek: LINQ forbedringer
+# Biblioteker: LINQ forbedringer
 
 FullJoin kompletterer de andre outer-join operasjonene i LINQ:
 
@@ -200,7 +234,7 @@ foreach (var (product, category) in fullJoined)
 
 ---
 
-# Bibliotek: Asynkron validering
+# Biblioteker: Asynkron validering
 
 ```c#
 public sealed class BackendOptionsValidator : IAsyncValidateOptions<BackendOptions>
@@ -219,7 +253,7 @@ public sealed class BackendOptionsValidator : IAsyncValidateOptions<BackendOptio
 
 ---
 
-# Bibliotek: Regelbasert Open Telemetry aktivitet sporing
+# Biblioteker: Regelbasert Open Telemetry aktivitet sporing
 
 ```c#
 builder.Services.AddTracing(tracing =>
@@ -230,7 +264,7 @@ builder.Services.AddTracing(tracing =>
 ```
 ---
 
-# Bibliotek: Kryptografi
+# Biblioteker: Kryptografi
 
 - Eksperimentell støtte for "post-quantum" kryptografi
 
@@ -242,6 +276,12 @@ sender.Seal("Hello"u8, out byte[] encapsulatedSecret, out byte[] ciphertext);
 byte[] plaintext = recipient.Open(encapsulatedSecret, ciphertext);
 Console.WriteLine(Encoding.UTF8.GetString(plaintext));
 ```
+
+---
+
+class: center, middle
+
+# Software development kit (SDK)
 
 ---
 
@@ -290,7 +330,7 @@ dotnet nuget update source public --min-publish-age-hours 48 --configfile nuget.
 
 # SDK: Kontainere
 
-- Innebygd kontainerstøtte i operativsystemet brukes som standard på Windows og macOS
+- Innebygd kontainerstøtte i operativsystemet brukes som standard på Windows (`wslc`) og macOS (`container`)
 - Docker og PodMan fortsatt støttet som alternativer
 - Deterministisk image digest
     ```bash
@@ -308,7 +348,13 @@ Ingen.
 
 ---
 
-# ASP.NET Core : Union typer
+class: center, middle
+
+# ASP.NET Core
+
+---
+
+# ASP.NET Core: Union typer
 
 ```csharp
 public union UnionIntString(int, string);
@@ -359,8 +405,6 @@ public class RobotsController : ControllerBase
   https://learn.microsoft.com/api/mcp
 - .NET 11 skills
   https://github.com/dotnet/skills/tree/main/plugins/dotnet11
-- (Skills Over MCP Working Group)
-  https://github.com/modelcontextprotocol/ext-skills  
 
 ---
 
